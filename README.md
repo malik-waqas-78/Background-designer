@@ -1,7 +1,7 @@
 # **Enhanced Card Designer**
 
 **Try it out at**
-[Background Designers](https://malik-waqas-78.github.io/Background-designers)
+[Background Designers](https://malik-waqas-78.github.io/Background-designer)
 
 This is a web-based application that allows users to create unique, cinematic-style background cards with a high degree of customization. The tool provides a live preview of the design, making it easy to experiment with different combinations of colors, patterns, and effects.
 

@@ -1,1416 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Background Designer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Enhanced Card Designer</title>
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #1f2937;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .gradient-preview {
-            width: 100%;
-            height: 40px;
-            border-radius: 8px;
-            margin-top: 8px;
-            border: 1px solid #374151;
-        }
-        .pattern-preview {
-            width: 100%;
-            height: 40px;
-            border-radius: 8px;
-            margin-top: 8px;
-            border: 1px solid #374151;
-        }
-        canvas {
-            touch-action: none;
-        }
-        .section {
-            background: rgba(31, 41, 55, 0.5);
-            border-radius: 0.75rem;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-    </style>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="text-white">
-    <div class="flex flex-col lg:flex-row h-screen">
-        <div class="w-full lg:w-1/3 p-6 bg-[#171e2c] border-r border-gray-700 overflow-y-auto no-scrollbar">
-            <h1 class="text-3xl font-bold mb-6 text-[#ff9800]">Enhanced Card Designer</h1>
-            <p class="text-sm text-gray-300 mb-6">Create unique cards with advanced customization options.</p>
 
-            <div class="section">
-                <h2 class="text-xl font-semibold mb-3">Background Colors</h2>
-                <div id="color-pickers" class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="color-0" class="block text-sm font-medium text-gray-400">Color 1</label>
-                        <input type="color" id="color-0" value="#0A132D" class="color-input mt-1 w-full h-10 rounded-md border-gray-600 focus:ring-2 focus:ring-[#ff9800]">
-                    </div>
-                    <div>
-                        <label for="color-1" class="block text-sm font-medium text-gray-400">Color 2</label>
-                        <input type="color" id="color-1" value="#1C374D" class="color-input mt-1 w-full h-10 rounded-md border-gray-600 focus:ring-2 focus:ring-[#ff9800]">
-                    </div>
-                </div>
-                <button id="add-color-btn" class="mt-4 w-full bg-[#374151] hover:bg-[#4b5563] text-gray-300 font-bold py-2 px-4 rounded-xl transition-colors duration-200">
-                    <i class="fa-solid fa-plus mr-2"></i> Add Color
-                </button>
-            </div>
+<body>
+    <header>
+        <h1><i class="fas fa-palette"></i> Enhanced Card Designer</h1>
+    </header>
 
-            <div class="section">
-                <h2 class="text-xl font-semibold mb-3">Background Gradient</h2>
-                
-                <div class="mb-4">
-                    <label for="gradient-type" class="block text-sm font-medium text-gray-400">Gradient Type</label>
-                    <select id="gradient-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-[#1f2937] border-gray-600 focus:outline-none focus:ring-[#ff9800] focus:border-[#ff9800] sm:text-sm rounded-md">
+    <main class="app-container">
+        <!-- LEFT PANEL – CONTROLS -->
+        <aside class="controls-panel">
+            
+            <!-- BACKGROUND COLORS -->
+            <section class="panel">
+                <h2><i class="fas fa-fill-drip"></i> Background Colors</h2>
+                <div id="color-pickers" class="color-grid"></div>
+                <button id="add-color-btn" class="btn"><i class="fas fa-plus"></i> Add color</button>
+            </section>
+
+            <!-- GRADIENT -->
+            <section class="panel">
+                <h2><i class="fas fa-gradient"></i> Background Gradient</h2>
+                <div class="form-group">
+                    <label for="gradient-type">Gradient type</label>
+                    <select id="gradient-type">
                         <option value="linear">Linear</option>
                         <option value="radial">Radial</option>
                     </select>
                 </div>
-                
                 <div id="linear-controls">
-                    <div class="mb-4">
-                        <label for="gradient-angle" class="block text-sm font-medium text-gray-400">Angle</label>
-                        <input type="range" id="gradient-angle" min="0" max="360" value="45" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                        <span class="text-sm text-gray-400 mt-2 block" id="gradient-angle-value">45°</span>
+                    <div class="form-group">
+                        <label for="gradient-angle">Angle: <span id="gradient-angle-value">45°</span></label>
+                        <input type="range" id="gradient-angle" min="0" max="360" value="45">
                     </div>
                 </div>
-                
                 <div id="radial-controls" class="hidden">
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label for="radial-center-x" class="block text-sm font-medium text-gray-400">Center X</label>
-                            <input type="range" id="radial-center-x" min="0" max="100" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                            <span class="text-sm text-gray-400 mt-2 block" id="radial-center-x-value">50%</span>
+                     <div class="form-row">
+                        <div class="form-group">
+                            <label for="radial-center-x">Center X: <span id="radial-center-x-value">50%</span></label>
+                            <input type="range" id="radial-center-x" min="0" max="100" value="50">
                         </div>
-                        <div>
-                            <label for="radial-center-y" class="block text-sm font-medium text-gray-400">Center Y</label>
-                            <input type="range" id="radial-center-y" min="0" max="100" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                            <span class="text-sm text-gray-400 mt-2 block" id="radial-center-y-value">50%</span>
+                        <div class="form-group">
+                            <label for="radial-center-y">Center Y: <span id="radial-center-y-value">50%</span></label>
+                            <input type="range" id="radial-center-y" min="0" max="100" value="50">
                         </div>
                     </div>
-                    <div>
-                        <label for="radial-radius" class="block text-sm font-medium text-gray-400">Radius</label>
-                        <input type="range" id="radial-radius" min="10" max="150" value="70" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                        <span class="text-sm text-gray-400 mt-2 block" id="radial-radius-value">70%</span>
+                    <div class="form-group">
+                        <label for="radial-radius">Radius: <span id="radial-radius-value">70%</span></label>
+                        <input type="range" id="radial-radius" min="10" max="150" value="70">
                     </div>
                 </div>
-                
-                <div id="gradient-preview" class="gradient-preview"></div>
-                
-                <div class="mt-4">
-                    <label for="background-opacity" class="block text-sm font-medium text-gray-400">Background Opacity</label>
-                    <input type="range" id="background-opacity" min="0" max="100" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                    <span class="text-sm text-gray-400 mt-2 block" id="background-opacity-value">100%</span>
+                <div id="gradient-preview" class="preview"></div>
+            </section>
+
+            <!-- PATTERN SELECTION -->
+            <section class="panel">
+                <h2><i class="fas fa-shapes"></i> Patterns</h2>
+                <div class="pattern-grid" id="pattern-selection-grid">
+                    <!-- Patterns will be dynamically inserted here by script.js -->
                 </div>
+            </section>
+
+             <!-- PATTERN COLORS -->
+            <section class="panel">
+                <h2><i class="fas fa-swatchbook"></i> Pattern Colors</h2>
+                <div id="pattern-color-pickers" class="color-grid"></div>
+                <button id="add-pattern-color-btn" class="btn"><i class="fas fa-plus"></i> Add pattern color</button>
+                <div class="radio-group" style="margin-top: 1rem;">
+                    <label class="radio-option"><input type="radio" name="pattern-style" value="solid" checked> Solid</label>
+                    <label class="radio-option"><input type="radio" name="pattern-style" value="gradient"> Gradient</label>
+                </div>
+                <div id="pattern-preview" class="preview"></div>
+            </section>
+
+            <!-- PATTERN CONTROLS -->
+            <section class="panel">
+                <h2><i class="fas fa-sliders-h"></i> Pattern Controls</h2>
+                <div class="form-group">
+                    <label for="pattern-size">Size: <span id="pattern-size-value">20</span></label>
+                    <input type="range" id="pattern-size" min="2" max="100" value="20">
+                </div>
+                <div class="form-group">
+                    <label for="pattern-thickness">Thickness: <span id="pattern-thickness-value">2</span></label>
+                    <input type="range" id="pattern-thickness" min="1" max="20" value="2">
+                </div>
+                <div class="form-group">
+                    <label for="pattern-spacing">Spacing: <span id="pattern-spacing-value">5</span></label>
+                    <input type="range" id="pattern-spacing" min="0" max="50" value="5">
+                </div>
+                <div class="form-group">
+                    <label for="pattern-opacity">Opacity: <span id="pattern-opacity-value">20%</span></label>
+                    <input type="range" id="pattern-opacity" min="0" max="100" value="20">
+                </div>
+            </section>
+
+            <!-- TRANSFORM -->
+            <section class="panel">
+                <h2><i class="fas fa-arrows-alt"></i> Transform & Effects</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rotation">Rotation: <span id="rotation-value">0°</span></label>
+                        <input type="range" id="rotation" min="0" max="360" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="zoom">Zoom: <span id="zoom-value">100%</span></label>
+                        <input type="range" id="zoom" min="0.1" max="5.0" step="0.05" value="1.0">
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="blur-radius">Background Blur: <span id="blur-radius-value">0px</span></label>
+                    <input type="range" id="blur-radius" min="0" max="50" value="0">
+                </div>
+            </section>
+
+            <!-- ELEMENTS (TEXT & IMAGES) -->
+            <section class="panel">
+                <h2><i class="fas fa-layer-group"></i> Elements</h2>
+                <div class="form-group">
+                    <label>Add New Element</label>
+                    <div class="form-row">
+                         <button id="add-text-btn" class="btn"><i class="fas fa-font"></i> Text</button>
+                         <label for="image-upload" class="btn"><i class="fas fa-image"></i> Image</label>
+                         <input type="file" id="image-upload" accept="image/*" class="hidden">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Layers</label>
+                    <div id="element-list" class="element-list">
+                        <p style="text-align: center; color: var(--gray);">No elements added yet.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ELEMENT EDITOR (DYNAMIC) -->
+            <div id="element-editor-panel">
+                <!-- This will be populated when an element is selected -->
             </div>
 
-            <div class="section">
-                <h2 class="text-xl font-semibold mb-3">Pattern Colors</h2>
-                <div id="pattern-color-pickers" class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="pattern-color-0" class="block text-sm font-medium text-gray-400">Pattern Color 1</label>
-                        <input type="color" id="pattern-color-0" value="#FFFFFF" class="pattern-color-input mt-1 w-full h-10 rounded-md border-gray-600 focus:ring-2 focus:ring-[#ff9800]">
-                    </div>
-                    <div>
-                        <label for="pattern-color-1" class="block text-sm font-medium text-gray-400">Pattern Color 2</label>
-                        <input type="color" id="pattern-color-1" value="#000000" class="pattern-color-input mt-1 w-full h-10 rounded-md border-gray-600 focus:ring-2 focus:ring-[#ff9800]">
-                    </div>
-                </div>
-                <button id="add-pattern-color-btn" class="mt-4 w-full bg-[#374151] hover:bg-[#4b5563] text-gray-300 font-bold py-2 px-4 rounded-xl transition-colors duration-200">
-                    <i class="fa-solid fa-plus mr-2"></i> Add Pattern Color
-                </button>
-            </div>
 
-            <div class="section">
-                <h2 class="text-xl font-semibold mb-3">Pattern</h2>
-                <div class="flex flex-wrap gap-4">
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-grid" name="pattern" value="grid" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-grid" class="ml-2 text-sm text-gray-300">Grid</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-dots" name="pattern" value="dots" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-dots" class="ml-2 text-sm text-gray-300">Dots</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-lines" name="pattern" value="lines" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-lines" class="ml-2 text-sm text-gray-300">Lines</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-hexagon" name="pattern" value="hexagon" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-hexagon" class="ml-2 text-sm text-gray-300">Hexagons</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-triangle" name="pattern" value="triangle" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-triangle" class="ml-2 text-sm text-gray-300">Triangles</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-waves" name="pattern" value="waves" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-waves" class="ml-2 text-sm text-gray-300">Waves</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-noise" name="pattern" value="noise" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-noise" class="ml-2 text-sm text-gray-300">Noise</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-checkerboard" name="pattern" value="checkerboard" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-checkerboard" class="ml-2 text-sm text-gray-300">Checkerboard</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-stripes" name="pattern" value="stripes" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-stripes" class="ml-2 text-sm text-gray-300">Stripes</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-squares" name="pattern" value="squares" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-squares" class="ml-2 text-sm text-gray-300">Squares</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-rings" name="pattern" value="rings" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-rings" class="ml-2 text-sm text-gray-300">Rings</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-fractal" name="pattern" value="fractal" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-fractal" class="ml-2 text-sm text-gray-300">Fractal</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-smoke" name="pattern" value="smoke" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-smoke" class="ml-2 text-sm text-gray-300">Smoke</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="pattern-random" name="pattern" value="random" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600 rounded">
-                        <label for="pattern-random" class="ml-2 text-sm text-gray-300">Random Image</label>
-                    </div>
+            <button id="randomize-btn" class="btn btn-accent"><i class="fas fa-random"></i> Randomize All</button>
+            <button id="download-btn" class="btn"><i class="fas fa-download"></i> Download PNG</button>
+        </aside>
+
+        <!-- RIGHT PANEL – CANVAS -->
+        <section class="canvas-container">
+            <canvas id="card-canvas"></canvas>
+            <div id="loading-box" class="loading-overlay">
+                <div class="loading-content">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Generating...</p>
                 </div>
             </div>
+        </section>
+    </main>
 
-            <div class="section">
-                <h2 class="text-xl font-semibold mb-3">Pattern Style</h2>
-                <div class="flex items-center mb-4">
-                    <input type="radio" id="pattern-style-solid" name="pattern-style" value="solid" checked class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600">
-                    <label for="pattern-style-solid" class="ml-2 text-sm text-gray-300">Solid Color</label>
-                </div>
-                <div class="flex items-center">
-                    <input type="radio" id="pattern-style-gradient" name="pattern-style" value="gradient" class="focus:ring-[#ff9800] h-4 w-4 text-[#ff9800] border-gray-600">
-                    <label for="pattern-style-gradient" class="ml-2 text-sm text-gray-300">Gradient</label>
-                </div>
-                <div id="pattern-preview" class="pattern-preview mt-3"></div>
-            </div>
-
-            <div class="section">
-                <h2 class="text-xl font-semibold mb-3">Pattern Controls</h2>
-                
-                <div class="mb-4">
-                    <label for="pattern-size" class="block text-sm font-medium text-gray-400">Pattern Size</label>
-                    <input type="range" id="pattern-size" min="5" max="50" value="20" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                    <span class="text-sm text-gray-400 mt-2 block" id="pattern-size-value">Size: 20</span>
-                </div>
-
-                <div class="mb-4">
-                    <label for="pattern-thickness" class="block text-sm font-medium text-gray-400">Pattern Thickness</label>
-                    <input type="range" id="pattern-thickness" min="1" max="10" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                    <span class="text-sm text-gray-400 mt-2 block" id="pattern-thickness-value">Thickness: 2</span>
-                </div>
-                
-                <div class="mb-4">
-                    <label for="pattern-spacing" class="block text-sm font-medium text-gray-400">Pattern Spacing</label>
-                    <input type="range" id="pattern-spacing" min="1" max="30" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                    <span class="text-sm text-gray-400 mt-2 block" id="pattern-spacing-value">Spacing: 5</span>
-                </div>
-                
-                <div>
-                    <label for="pattern-opacity" class="block text-sm font-medium text-gray-400">Pattern Opacity</label>
-                    <input type="range" id="pattern-opacity" min="0" max="100" value="20" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                    <span class="text-sm text-gray-400 mt-2 block" id="pattern-opacity-value">20%</span>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2 class="text-xl font-semibold mb-3">Transform</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="rotation" class="block text-sm font-medium text-gray-400">Rotation</label>
-                        <input type="range" id="rotation" min="0" max="360" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                        <span class="text-sm text-gray-400 mt-2 block" id="rotation-value">0°</span>
-                    </div>
-                    <div>
-                        <label for="zoom" class="block text-sm font-medium text-gray-400">Zoom</label>
-                        <input type="range" id="zoom" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                        <span class="text-sm text-gray-400 mt-2 block" id="zoom-value">100%</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2 class="text-xl font-semibold mb-3">Blur Effect</h2>
-                <input type="range" id="blur-radius" min="0" max="50" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                <span class="text-sm text-gray-400 mt-2 block" id="blur-radius-value">0px</span>
-            </div>
-
-            <button id="randomize-btn" class="w-full bg-[#374151] hover:bg-[#4b5563] text-white font-bold py-3 px-4 rounded-xl transition-colors duration-200 shadow-lg flex items-center justify-center mb-4">
-                <i class="fa-solid fa-shuffle mr-2"></i> Randomize All
-            </button>
-            <button id="download-btn" class="w-full bg-[#ff9800] hover:bg-[#e68a00] text-white font-bold py-3 px-4 rounded-xl transition-colors duration-200 shadow-lg flex items-center justify-center">
-                <i class="fa-solid fa-download mr-2"></i> Download Card (1080x1080)
-            </button>
-        </div>
-
-        <div class="w-full lg:w-2/3 flex items-center justify-center p-6 bg-[#1f2937] relative">
-            <canvas id="card-canvas" width="1080" height="1080" class="w-full max-w-xl aspect-square rounded-2xl shadow-xl border border-gray-700 cursor-grab"></canvas>
-            <div id="loading-box" class="absolute inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden">
-                <div class="bg-[#1a237e] p-6 rounded-xl shadow-lg text-center">
-                    <i class="fa-solid fa-spinner fa-spin text-4xl text-[#ff9800] mb-4"></i>
-                    <p class="text-white">Generating image...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const canvas = document.getElementById('card-canvas');
-            const ctx = canvas.getContext('2d');
-            const loadingBox = document.getElementById('loading-box');
-            const colorPickersContainer = document.getElementById('color-pickers');
-            const addColorBtn = document.getElementById('add-color-btn');
-            const patternColorPickersContainer = document.getElementById('pattern-color-pickers');
-            const addPatternColorBtn = document.getElementById('add-pattern-color-btn');
-            const gradientPreview = document.getElementById('gradient-preview');
-            const patternPreview = document.getElementById('pattern-preview');
-            const gradientTypeSelect = document.getElementById('gradient-type');
-            const linearControls = document.getElementById('linear-controls');
-            const radialControls = document.getElementById('radial-controls');
-            const randomizeBtn = document.getElementById('randomize-btn');
-
-            // Create offscreen canvases for drawing and blurring
-            const drawCanvas = document.createElement('canvas');
-            drawCanvas.width = canvas.width;
-            drawCanvas.height = canvas.height;
-            const drawCtx = drawCanvas.getContext('2d');
-
-            const blurCanvas = document.createElement('canvas');
-            blurCanvas.width = canvas.width;
-            blurCanvas.height = canvas.height;
-            const blurCtx = blurCanvas.getContext('2d');
-
-            // --- UI Elements ---
-            const patternInputs = document.querySelectorAll('input[name="pattern"]');
-            const patternStyleInputs = document.querySelectorAll('input[name="pattern-style"]');
-            const patternSizeInput = document.getElementById('pattern-size');
-            const patternThicknessInput = document.getElementById('pattern-thickness');
-            const patternSpacingInput = document.getElementById('pattern-spacing');
-            const rotationInput = document.getElementById('rotation');
-            const zoomInput = document.getElementById('zoom');
-            const downloadBtn = document.getElementById('download-btn');
-            const patternSizeValue = document.getElementById('pattern-size-value');
-            const patternThicknessValue = document.getElementById('pattern-thickness-value');
-            const patternSpacingValue = document.getElementById('pattern-spacing-value');
-            const patternOpacityValue = document.getElementById('pattern-opacity-value');
-            const backgroundOpacityValue = document.getElementById('background-opacity-value');
-            const rotationValue = document.getElementById('rotation-value');
-            const zoomValue = document.getElementById('zoom-value');
-            const blurRadiusInput = document.getElementById('blur-radius');
-            const blurRadiusValue = document.getElementById('blur-radius-value');
-            const backgroundOpacityInput = document.getElementById('background-opacity');
-            const patternOpacityInput = document.getElementById('pattern-opacity');
-            
-            // Gradient controls
-            const gradientAngleInput = document.getElementById('gradient-angle');
-            const gradientAngleValue = document.getElementById('gradient-angle-value');
-            const radialCenterXInput = document.getElementById('radial-center-x');
-            const radialCenterXValue = document.getElementById('radial-center-x-value');
-            const radialCenterYInput = document.getElementById('radial-center-y');
-            const radialCenterYValue = document.getElementById('radial-center-y-value');
-            const radialRadiusInput = document.getElementById('radial-radius');
-            const radialRadiusValue = document.getElementById('radial-radius-value');
-
-            // --- State Management ---
-            let state = {
-                colors: ["#0A132D", "#1C374D"],
-                patternColors: ["#FFFFFF", "#000000"],
-                patterns: [],
-                patternSize: parseInt(patternSizeInput.value),
-                patternThickness: parseInt(patternThicknessInput.value),
-                patternSpacing: parseInt(patternSpacingInput.value),
-                rotation: parseInt(rotationInput.value),
-                zoom: parseFloat(zoomInput.value),
-                offsetX: 0,
-                offsetY: 0,
-                isDragging: false,
-                lastX: 0,
-                lastY: 0,
-                gradientType: 'linear',
-                gradientAngle: 45,
-                radialCenterX: 50,
-                radialCenterY: 50,
-                radialRadius: 70,
-                patternStyle: 'solid',
-                backgroundOpacity: 1.0,
-                patternOpacity: 0.2,
-                blurRadius: 0
-            };
-
-            // Initialize UI based on state
-            const initializeUI = () => {
-                gradientTypeSelect.value = state.gradientType;
-                gradientAngleInput.value = state.gradientAngle;
-                radialCenterXInput.value = state.radialCenterX;
-                radialCenterYInput.value = state.radialCenterY;
-                radialRadiusInput.value = state.radialRadius;
-                backgroundOpacityInput.value = state.backgroundOpacity * 100;
-                patternOpacityInput.value = state.patternOpacity * 100;
-                blurRadiusInput.value = state.blurRadius;
-                rotationInput.value = state.rotation;
-                zoomInput.value = state.zoom;
-                patternSizeInput.value = state.patternSize;
-                patternThicknessInput.value = state.patternThickness;
-                patternSpacingInput.value = state.patternSpacing;
-                
-                document.getElementById('pattern-style-solid').checked = state.patternStyle === 'solid';
-                document.getElementById('pattern-style-gradient').checked = state.patternStyle === 'gradient';
-
-                patternInputs.forEach(input => {
-                    input.checked = state.patterns.includes(input.value);
-                });
-                
-                // Update previews
-                updateGradientPreview();
-                updatePatternPreview();
-            };
-
-            // --- Core Drawing Function ---
-            const drawCard = () => {
-                const { 
-                    colors, 
-                    patternColors,
-                    patterns, 
-                    patternSize, 
-                    patternThickness, 
-                    patternSpacing,
-                    rotation, 
-                    zoom, 
-                    offsetX, 
-                    offsetY,
-                    gradientType,
-                    gradientAngle,
-                    radialCenterX,
-                    radialCenterY,
-                    radialRadius,
-                    backgroundOpacity,
-                    patternOpacity,
-                    blurRadius
-                } = state;
-
-                // Clear offscreen canvas
-                drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
-                
-                // Draw background gradient
-                let gradient;
-                if (gradientType === 'linear') {
-                    const angleRad = gradientAngle * Math.PI / 180;
-                    const x1 = drawCanvas.width/2 + Math.cos(angleRad) * drawCanvas.width/2;
-                    const y1 = drawCanvas.height/2 + Math.sin(angleRad) * drawCanvas.height/2;
-                    const x2 = drawCanvas.width/2 - Math.cos(angleRad) * drawCanvas.width/2;
-                    const y2 = drawCanvas.height/2 - Math.sin(angleRad) * drawCanvas.height/2;
-                    
-                    gradient = drawCtx.createLinearGradient(x1, y1, x2, y2);
-                } else {
-                    // Radial gradient
-                    const cx = (radialCenterX / 100) * drawCanvas.width;
-                    const cy = (radialCenterY / 100) * drawCanvas.height;
-                    const r = (radialRadius / 100) * Math.min(drawCanvas.width, drawCanvas.height);
-                    
-                    gradient = drawCtx.createRadialGradient(
-                        cx, cy, 0,
-                        cx, cy, r
-                    );
-                }
-                
-                for (let i = 0; i < colors.length; i++) {
-                    gradient.addColorStop(i / (colors.length - 1 || 1), colors[i]);
-                }
-                
-                // Apply background opacity
-                drawCtx.globalAlpha = backgroundOpacity;
-                drawCtx.fillStyle = gradient;
-                drawCtx.fillRect(0, 0, drawCanvas.width, drawCanvas.height);
-                drawCtx.globalAlpha = 1.0;
-
-                // Draw patterns with transformations
-                drawCtx.save();
-                drawCtx.translate(drawCanvas.width / 2, drawCanvas.height / 2);
-                drawCtx.rotate(rotation * Math.PI / 180);
-                drawCtx.scale(zoom, zoom);
-                drawCtx.translate(-drawCanvas.width / 2 + offsetX, -drawCanvas.height / 2 + offsetY);
-                
-                // Draw each selected pattern
-                patterns.forEach(pattern => {
-                    let patternColor;
-                    if (state.patternStyle === 'solid') {
-                        patternColor = patternColors.length > 1 ? patternColors[1] : "#FFFFFF";
-                    } else {
-                        // Create a gradient for the pattern
-                        const patternGradient = drawCtx.createLinearGradient(0, 0, drawCanvas.width, drawCanvas.height);
-                        patternGradient.addColorStop(0, patternColors[0]);
-                        patternGradient.addColorStop(1, patternColors[patternColors.length - 1]);
-                        patternColor = patternGradient;
-                    }
-                    
-                    switch(pattern) {
-                        case 'grid':
-                            drawGridPattern(drawCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'dots':
-                            drawDotsPattern(drawCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'lines':
-                            drawLinesPattern(drawCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'hexagon':
-                            drawHexagonPattern(drawCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'triangle':
-                            drawTrianglePattern(drawCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'waves':
-                            drawWavesPattern(drawCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'noise':
-                            drawNoisePattern(drawCtx, patternColor);
-                            break;
-                        case 'checkerboard':
-                            drawCheckerboardPattern(drawCtx, patternSize, patternColor, patternSpacing);
-                            break;
-                        case 'stripes':
-                            drawStripesPattern(drawCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'squares':
-                            drawSquaresPattern(drawCtx, patternSize, patternColor, patternSpacing);
-                            break;
-                        case 'rings':
-                            drawRingsPattern(drawCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'fractal':
-                            drawFractalPattern(drawCtx, patternSize, patternColor, patternSpacing);
-                            break;
-                        case 'smoke':
-                            drawSmokePattern(drawCtx, patternColors);
-                            break;
-                    }
-                });
-
-                drawCtx.restore();
-                
-                // Apply blur effect if needed
-                if (blurRadius > 0) {
-                    blurCtx.clearRect(0, 0, blurCanvas.width, blurCanvas.height);
-                    blurCtx.filter = `blur(${blurRadius}px)`;
-                    blurCtx.drawImage(drawCanvas, 0, 0);
-                    
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(blurCanvas, 0, 0);
-                } else {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(drawCanvas, 0, 0);
-                }
-            };
-            
-            // --- Perlin Noise for Smoke and other patterns ---
-            function PerlinNoise() {
-                const p = new Array(512);
-                const permutation = [151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,88,237,149,56,87,178,208,198,202,176,145,24,18,17,211,209,114,249,129,195,78,210,123,55,54,235,216,162,40,111,192,236,170,186,166,108,175,155,250,232,22,136,183,184,85,193,222,168,16,169,205,196,44,25,188,124,1,20,73,156,245,174,107,253,83,50,65,113,84,147,72,138,5,248,154,165,152,159,104,179,9,14,58,2,115,182,143,246,86,171,116,98,220,153,60,61,150,118,161,223,163,59,243,92,224,228,109,122,81,52,67,105,97,226,106,101,34,3,4,185,173,80,218,63,68,89,19,43,158,112,28,204,141,180,244,127,70,64,251,110,239,189,187,144,134,227,146,207,254,181,12,77,66,164,172,241,126,238,206,121,217,42,125,71,27,76,255,145,215,229,139,49,119,38,157,135,17,242,213,231,185,212,29,20,191,204,133,130,22,166,45,214,51,7,84,240,65,77,209,107,31,162,110,250,217,14,198,157,212,135,131,193,126,204,78,16,211,252,246,183,184,80,205,91,22,176,145,244,127,15,137,130,22,192,118,166,162,131,234,7,211,225,14,233,140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,88,237,149,56,87,178,208,198,202,176,145,24,18,17,211,209,114,249,129,195,78,210,123,55,54,235,216,162,40,111,192,236,170,186,166,108,175,155,250,232,22,136,183,184,85,193,222,168,16,169,205,196,44,25,188,124,1,20,73,156,245,174,107,253,83,50,65,113,84,147,72,138,5,248,154,165,152,159,104,179,9,14,58,2,115,182,143,246,86,171,116,98,220,153,60,61,150,118,161,223,163,59,243,92,224,228,109,122,81,52,67,105,97,226,106,101,34,3,4,185,173,80,218,63,68,89,19,43,158,112,28,204,141,180,244,127,70,64,251,110,239,189,187,144,134,227,146,207,254,181,12,77,66,164,172,241,126,238,206,121,217,42,125,71,27,76,255];
-                for (let i = 0; i < 256; i++) {
-                    p[256+i] = p[i] = permutation[i];
-                }
-
-                this.noise = function(x, y, z) {
-                    const X = Math.floor(x) & 255;
-                    const Y = Math.floor(y) & 255;
-                    const Z = Math.floor(z) & 255;
-                    x -= Math.floor(x);
-                    y -= Math.floor(y);
-                    z -= Math.floor(z);
-                    const u = fade(x);
-                    const v = fade(y);
-                    const w = fade(z);
-                    const A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z;
-                    const B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
-                    return scale(lerp(w, lerp(v, lerp(u, grad(p[AA], x, y, z), grad(p[BA], x-1, y, z)),
-                                      lerp(u, grad(p[AB], x, y-1, z), grad(p[BB], x-1, y-1, z))),
-                                  lerp(v, lerp(u, grad(p[AA + 1], x, y, z-1), grad(p[BA + 1], x-1, y, z-1)),
-                                      lerp(u, grad(p[AB + 1], x, y-1, z-1), grad(p[BB + 1], x-1, y-1, z-1)))));
-                }
-
-                function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
-                function lerp(t, a, b) { return a + t * (b - a); }
-                function grad(hash, x, y, z) {
-                    const h = hash & 15;
-                    const u = h < 8 ? x : y;
-                    const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
-                    return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
-                }
-                function scale(n) { return (1 + n) / 2; }
-            }
-            const perlin = new PerlinNoise();
-
-            // --- Pattern Drawing Functions (Optimized) ---
-            const drawGridPattern = (context, size, thickness, color, spacing) => {
-                context.beginPath();
-                context.strokeStyle = color;
-                context.lineWidth = thickness;
-                context.globalAlpha = state.patternOpacity;
-
-                const extendedWidth = context.canvas.width * 2;
-                const extendedHeight = context.canvas.height * 2;
-                const step = size + spacing;
-                
-                for (let x = -extendedWidth; x <= extendedWidth; x += step) {
-                    context.moveTo(x, -extendedHeight);
-                    context.lineTo(x, extendedHeight);
-                }
-                for (let y = -extendedHeight; y <= extendedHeight; y += step) {
-                    context.moveTo(-extendedWidth, y);
-                    context.lineTo(extendedWidth, y);
-                }
-                
-                context.stroke();
-                context.globalAlpha = 1;
-                context.closePath();
-            };
-
-            const drawDotsPattern = (context, size, thickness, color, spacing) => {
-                context.fillStyle = color;
-                context.globalAlpha = state.patternOpacity;
-                
-                const extendedWidth = context.canvas.width * 1.5;
-                const extendedHeight = context.canvas.height * 1.5;
-                const step = size + spacing;
-                
-                for (let x = -extendedWidth; x <= extendedWidth; x += step) {
-                    for (let y = -extendedHeight; y <= extendedHeight; y += step) {
-                        context.beginPath();
-                        context.arc(x, y, thickness * 1.5, 0, 2 * Math.PI);
-                        context.fill();
-                    }
-                }
-                context.globalAlpha = 1;
-            };
-
-            const drawLinesPattern = (context, size, thickness, color, spacing) => {
-                context.beginPath();
-                context.strokeStyle = color;
-                context.lineWidth = thickness;
-                context.globalAlpha = state.patternOpacity;
-
-                const extendedSize = Math.max(context.canvas.width, context.canvas.height) * 2;
-                const step = size + spacing;
-                
-                for (let i = -extendedSize; i <= extendedSize; i += step) {
-                    context.moveTo(i, -extendedSize);
-                    context.lineTo(i + extendedSize, extendedSize);
-                }
-                
-                context.stroke();
-                context.globalAlpha = 1;
-                context.closePath();
-            };
-            
-            const drawHexagonPattern = (context, size, thickness, color, spacing) => {
-                context.beginPath();
-                context.strokeStyle = color;
-                context.lineWidth = thickness;
-                context.globalAlpha = state.patternOpacity;
-                
-                const hexWidth = size * 2;
-                const hexHeight = Math.sqrt(3) / 2 * hexWidth;
-                const extendedWidth = context.canvas.width * 2;
-                const extendedHeight = context.canvas.height * 2;
-                const step = size + spacing;
-                
-                for (let y = -extendedHeight; y < extendedHeight; y += hexHeight * step/10) {
-                    for (let x = -extendedWidth; x < extendedWidth; x += hexWidth * 1.5 * step/10) {
-                        const xOffset = (y / hexHeight) % 2 === 0 ? 0 : hexWidth * 0.75;
-                        drawHexagon(context, x + xOffset, y, size);
-                        context.stroke();
-                    }
-                }
-                
-                context.globalAlpha = 1;
-                context.closePath();
-            };
-
-            const drawHexagon = (context, x, y, size) => {
-                context.moveTo(x + size, y);
-                for (let i = 0; i < 6; i++) {
-                    const angle = Math.PI / 3 * i;
-                    context.lineTo(x + size * Math.cos(angle), y + size * Math.sin(angle));
-                }
-            };
-            
-            const drawTrianglePattern = (context, size, thickness, color, spacing) => {
-                context.beginPath();
-                context.strokeStyle = color;
-                context.lineWidth = thickness;
-                context.globalAlpha = state.patternOpacity;
-                
-                const halfHeight = size * Math.sqrt(3) / 2;
-                const extendedWidth = context.canvas.width * 2;
-                const extendedHeight = context.canvas.height * 2;
-                const step = size + spacing;
-                
-                // Optimized: Draw fewer triangles by increasing step size
-                for (let y = -extendedHeight; y < extendedHeight; y += halfHeight * step/5) {
-                    for (let x = -extendedWidth; x < extendedWidth; x += size * step/5) {
-                        context.moveTo(x, y);
-                        context.lineTo(x - size/2, y + halfHeight);
-                        context.lineTo(x + size/2, y + halfHeight);
-                        context.lineTo(x, y);
-                        context.stroke();
-                    }
-                }
-                
-                context.globalAlpha = 1;
-                context.closePath();
-            };
-
-            const drawWavesPattern = (context, size, thickness, color, spacing) => {
-                context.beginPath();
-                context.strokeStyle = color;
-                context.lineWidth = thickness;
-                context.globalAlpha = state.patternOpacity;
-                
-                const extendedHeight = context.canvas.height * 2;
-                const step = size + spacing;
-                
-                for (let y = -extendedHeight; y < extendedHeight; y += step) {
-                    context.moveTo(-context.canvas.width, y);
-                    for (let x = -context.canvas.width; x < context.canvas.width * 2; x += 5) {
-                        context.lineTo(x, y + Math.sin(x * 0.05 + y * 0.01) * 10);
-                    }
-                    context.stroke();
-                }
-                
-                context.globalAlpha = 1;
-                context.closePath();
-            };
-            
-            const drawNoisePattern = (context, color) => {
-                // Create an offscreen canvas for noise pattern
-                const noiseCanvas = document.createElement('canvas');
-                noiseCanvas.width = 200;
-                noiseCanvas.height = 200;
-                const noiseCtx = noiseCanvas.getContext('2d');
-                
-                const imageData = noiseCtx.createImageData(200, 200);
-                const data = imageData.data;
-                
-                // Parse the color if it's a solid color
-                let r, g, b;
-                if (typeof color === 'string') {
-                    r = parseInt(color.substring(1, 3), 16);
-                    g = parseInt(color.substring(3, 5), 16);
-                    b = parseInt(color.substring(5, 7), 16);
-                } else {
-                    // For gradient, use a default color
-                    r = 255;
-                    g = 255;
-                    b = 255;
-                }
-                
-                for (let i = 0; i < data.length; i += 4) {
-                    if (Math.random() < 0.1) { // 10% density
-                        data[i] = r;
-                        data[i + 1] = g;
-                        data[i + 2] = b;
-                        data[i + 3] = 100; // Semi-transparent
-                    } else {
-                        data[i + 3] = 0; // Transparent
-                    }
-                }
-                
-                noiseCtx.putImageData(imageData, 0, 0);
-                
-                // Draw the noise pattern as a repeating pattern
-                const pattern = context.createPattern(noiseCanvas, 'repeat');
-                context.fillStyle = pattern;
-                context.globalAlpha = state.patternOpacity;
-                context.fillRect(-context.canvas.width, -context.canvas.height, context.canvas.width * 3, context.canvas.height * 3);
-                context.globalAlpha = 1;
-            };
-
-            const drawCheckerboardPattern = (context, size, color, spacing) => {
-                context.fillStyle = color;
-                context.globalAlpha = state.patternOpacity;
-                
-                const extendedWidth = context.canvas.width * 2;
-                const extendedHeight = context.canvas.height * 2;
-                const step = size + spacing;
-                
-                for (let y = -extendedHeight; y < extendedHeight; y += step) {
-                    for (let x = -extendedWidth; x < extendedWidth; x += step) {
-                        const col = Math.floor((x + extendedWidth) / step);
-                        const row = Math.floor((y + extendedHeight) / step);
-                        
-                        if ((col + row) % 2 === 0) {
-                            context.fillRect(x, y, size, size);
-                        }
-                    }
-                }
-                
-                context.globalAlpha = 1;
-            };
-
-            const drawStripesPattern = (context, size, thickness, color, spacing) => {
-                context.beginPath();
-                context.strokeStyle = color;
-                context.lineWidth = thickness;
-                context.globalAlpha = state.patternOpacity;
-                
-                const extendedWidth = context.canvas.width * 2;
-                const step = size + spacing;
-                
-                // Draw vertical stripes
-                for (let x = -extendedWidth; x < extendedWidth; x += step * 2) {
-                    context.fillStyle = color;
-                    context.fillRect(x, -context.canvas.height, size, context.canvas.height * 3);
-                }
-                
-                context.globalAlpha = 1;
-                context.closePath();
-            };
-
-            const drawSquaresPattern = (context, size, color, spacing) => {
-                context.fillStyle = color;
-                context.globalAlpha = state.patternOpacity;
-                
-                const extendedWidth = context.canvas.width * 2;
-                const extendedHeight = context.canvas.height * 2;
-                const step = size + spacing;
-                
-                for (let y = -extendedHeight; y < extendedHeight; y += step * 2) {
-                    for (let x = -extendedWidth; x < extendedWidth; x += step * 2) {
-                        context.fillRect(x + size/4, y + size/4, size/2, size/2);
-                    }
-                }
-                
-                context.globalAlpha = 1;
-            };
-
-            // Enhanced Rings pattern
-            const drawRingsPattern = (context, size, thickness, color, spacing) => {
-                context.strokeStyle = color;
-                context.lineWidth = thickness;
-                context.globalAlpha = state.patternOpacity;
-                
-                const centerX = context.canvas.width / 2;
-                const centerY = context.canvas.height / 2;
-                const maxRadius = Math.sqrt(centerX*centerX + centerY*centerY) * 1.5;
-                const step = size + spacing;
-                
-                for (let r = size; r < maxRadius; r += step) {
-                    context.beginPath();
-                    context.arc(centerX, centerY, r, 0, Math.PI * 2);
-                    context.stroke();
-                }
-                
-                context.globalAlpha = 1;
-            };
-
-            // Enhanced Fractal pattern
-            const drawFractalPattern = (context, size, color, spacing) => {
-                context.fillStyle = color;
-                context.globalAlpha = state.patternOpacity;
-                
-                const drawBranch = (x, y, size, angle, depth) => {
-                    if (depth === 0) return;
-                    
-                    const newX = x + Math.cos(angle) * size;
-                    const newY = y + Math.sin(angle) * size;
-                    
-                    context.beginPath();
-                    context.moveTo(x, y);
-                    context.lineTo(newX, newY);
-                    context.stroke();
-                    
-                    // Recursive branches with variations
-                    const angleVariation = Math.PI/6 + Math.random() * Math.PI/12;
-                    drawBranch(newX, newY, size * 0.75, angle - angleVariation, depth - 1);
-                    drawBranch(newX, newY, size * 0.75, angle + angleVariation, depth - 1);
-                };
-                
-                context.strokeStyle = color;
-                context.lineWidth = 1;
-                
-                // Draw multiple fractal trees
-                const gridSize = size * 8 + spacing;
-                for (let x = gridSize/2; x < context.canvas.width * 1.5; x += gridSize) {
-                    for (let y = gridSize/2; y < context.canvas.height * 1.5; y += gridSize) {
-                        drawBranch(x, y, size * 3, -Math.PI/2, 6);
-                    }
-                }
-                
-                context.globalAlpha = 1;
-            };
-
-            // New Smoke Pattern
-            const drawSmokePattern = (context, colors) => {
-    const time = Date.now() / 10000;
-    const scale = 0.005;
-    const turbulence = 0.5;
-
-    const color1 = colors[0];
-    const color2 = colors[colors.length - 1];
-
-    // Create temporary canvas
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = context.canvas.width;
-    tempCanvas.height = context.canvas.height;
-    const tempCtx = tempCanvas.getContext('2d');
-    
-    // Generate smoke image
-    const imageData = tempCtx.createImageData(tempCanvas.width, tempCanvas.height);
-    const data = imageData.data;
-
-    // Simple lerp function
-    function lerpColor(c1, c2, t) {
-        const r1 = parseInt(c1.substring(1, 3), 16);
-        const g1 = parseInt(c1.substring(3, 5), 16);
-        const b1 = parseInt(c1.substring(5, 7), 16);
-        const r2 = parseInt(c2.substring(1, 3), 16);
-        const g2 = parseInt(c2.substring(3, 5), 16);
-        const b2 = parseInt(c2.substring(5, 7), 16);
-
-        const r = r1 + (r2 - r1) * t;
-        const g = g1 + (g2 - g1) * t;
-        const b = b1 + (b2 - b1) * t;
-        return `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`;
-    }
-    
-    for (let y = 0; y < context.canvas.height; y++) {
-        for (let x = 0; x < context.canvas.width; x++) {
-            let n1 = perlin.noise(x * scale, y * scale, time);
-            let n2 = perlin.noise(x * scale * 2, y * scale * 2, time);
-            let n3 = perlin.noise(x * scale * 4, y * scale * 4, time);
-            
-            let noiseValue = (n1 * 0.6 + n2 * 0.3 + n3 * 0.1) * turbulence;
-            let alpha = Math.max(0, Math.min(1, noiseValue));
-
-            const color = lerpColor(color1, color2, alpha);
-            
-            const r = parseInt(color.substring(4, color.indexOf(',')));
-            const g = parseInt(color.substring(color.indexOf(',') + 1, color.lastIndexOf(',')));
-            const b = parseInt(color.substring(color.lastIndexOf(',') + 1, color.length-1));
-
-            const index = (y * context.canvas.width + x) * 4;
-            data[index] = r;
-            data[index + 1] = g;
-            data[index + 2] = b;
-            data[index + 3] = alpha * 255; // Remove patternOpacity multiplication
-        }
-    }
-    tempCtx.putImageData(imageData, 0, 0);
-    
-    // Composite smoke over existing content
-    const originalAlpha = context.globalAlpha;
-    context.globalAlpha = state.patternOpacity;
-    context.drawImage(tempCanvas, 0, 0);
-    context.globalAlpha = originalAlpha;
-};
-            // Update gradient preview
-            function updateGradientPreview() {
-                const { colors, gradientType, gradientAngle, radialCenterX, radialCenterY, radialRadius } = state;
-                
-                const previewCtx = document.createElement('canvas').getContext('2d');
-                previewCtx.canvas.width = gradientPreview.offsetWidth;
-                previewCtx.canvas.height = gradientPreview.offsetHeight;
-                
-                let gradient;
-                if (gradientType === 'linear') {
-                    const angleRad = gradientAngle * Math.PI / 180;
-                    const x1 = previewCtx.canvas.width/2 + Math.cos(angleRad) * previewCtx.canvas.width/2;
-                    const y1 = previewCtx.canvas.height/2 + Math.sin(angleRad) * previewCtx.canvas.height/2;
-                    const x2 = previewCtx.canvas.width/2 - Math.cos(angleRad) * previewCtx.canvas.width/2;
-                    const y2 = previewCtx.canvas.height/2 - Math.sin(angleRad) * previewCtx.canvas.height/2;
-                    
-                    gradient = previewCtx.createLinearGradient(x1, y1, x2, y2);
-                } else {
-                    // Radial gradient
-                    const cx = (radialCenterX / 100) * previewCtx.canvas.width;
-                    const cy = (radialCenterY / 100) * previewCtx.canvas.height;
-                    const r = (radialRadius / 100) * Math.min(previewCtx.canvas.width, previewCtx.canvas.height);
-                    
-                    gradient = previewCtx.createRadialGradient(
-                        cx, cy, 0,
-                        cx, cy, r
-                    );
-                }
-                
-                for (let i = 0; i < colors.length; i++) {
-                    gradient.addColorStop(i / (colors.length - 1 || 1), colors[i]);
-                }
-                
-                previewCtx.fillStyle = gradient;
-                previewCtx.fillRect(0, 0, previewCtx.canvas.width, previewCtx.canvas.height);
-                
-                gradientPreview.style.backgroundImage = `url(${previewCtx.canvas.toDataURL()})`;
-            }
-            
-            // Update pattern preview
-            function updatePatternPreview() {
-                const { patternColors, patternStyle } = state;
-                
-                const previewCtx = document.createElement('canvas').getContext('2d');
-                previewCtx.canvas.width = patternPreview.offsetWidth;
-                previewCtx.canvas.height = patternPreview.offsetHeight;
-                
-                if (patternStyle === 'solid') {
-                    previewCtx.fillStyle = patternColors.length > 1 ? patternColors[1] : "#FFFFFF";
-                    previewCtx.fillRect(0, 0, previewCtx.canvas.width, previewCtx.canvas.height);
-                } else {
-                    const gradient = previewCtx.createLinearGradient(0, 0, previewCtx.canvas.width, previewCtx.canvas.height);
-                    gradient.addColorStop(0, patternColors[0]);
-                    gradient.addColorStop(1, patternColors[patternColors.length - 1]);
-                    previewCtx.fillStyle = gradient;
-                    previewCtx.fillRect(0, 0, previewCtx.canvas.width, previewCtx.canvas.height);
-                }
-                
-                patternPreview.style.backgroundImage = `url(${previewCtx.canvas.toDataURL()})`;
-            }
-
-            // --- Event Handlers for Controls ---
-            const handleUpdate = () => {
-                // Update colors state
-                state.colors = Array.from(document.querySelectorAll('.color-input')).map(input => input.value);
-                state.patternColors = Array.from(document.querySelectorAll('.pattern-color-input')).map(input => input.value);
-                
-                // Update patterns state
-                state.patterns = Array.from(document.querySelectorAll('input[name="pattern"]:checked')).map(input => input.value);
-                
-                // If "random" pattern is selected, clear other selections
-                if (state.patterns.includes('random') && state.patterns.length > 1) {
-                    state.patterns = ['random'];
-                    document.querySelectorAll('input[name="pattern"]:checked').forEach(input => {
-                        if (input.value !== 'random') {
-                            input.checked = false;
-                        }
-                    });
-                } else if (!state.patterns.includes('random')) {
-                    // Make sure "random" is unchecked if another is selected
-                    document.getElementById('pattern-random').checked = false;
-                }
-                
-                // Update other states
-                state.patternSize = parseInt(patternSizeInput.value);
-                state.patternThickness = parseInt(patternThicknessInput.value);
-                state.patternSpacing = parseInt(patternSpacingInput.value);
-                state.rotation = parseInt(rotationInput.value);
-                state.zoom = parseFloat(zoomInput.value);
-                state.backgroundOpacity = parseInt(backgroundOpacityInput.value) / 100;
-                state.patternOpacity = parseInt(patternOpacityInput.value) / 100;
-                state.blurRadius = parseInt(blurRadiusInput.value);
-                
-                // Update gradient state
-                state.gradientType = gradientTypeSelect.value;
-                state.gradientAngle = parseInt(gradientAngleInput.value);
-                state.radialCenterX = parseInt(radialCenterXInput.value);
-                state.radialCenterY = parseInt(radialCenterYInput.value);
-                state.radialRadius = parseInt(radialRadiusInput.value);
-                
-                // Update pattern style
-                state.patternStyle = document.querySelector('input[name="pattern-style"]:checked').value;
-                
-                // Update UI values
-                patternSizeValue.textContent = `Size: ${state.patternSize}`;
-                patternThicknessValue.textContent = `Thickness: ${state.patternThickness}`;
-                patternSpacingValue.textContent = `Spacing: ${state.patternSpacing}`;
-                patternOpacityValue.textContent = `${parseInt(patternOpacityInput.value)}%`;
-                backgroundOpacityValue.textContent = `${parseInt(backgroundOpacityInput.value)}%`;
-                rotationValue.textContent = `${state.rotation}°`;
-                zoomValue.textContent = `${Math.round(state.zoom * 100)}%`;
-                blurRadiusValue.textContent = `${state.blurRadius}px`;
-                gradientAngleValue.textContent = `${state.gradientAngle}°`;
-                radialCenterXValue.textContent = `${state.radialCenterX}%`;
-                radialCenterYValue.textContent = `${state.radialCenterY}%`;
-                radialRadiusValue.textContent = `${state.radialRadius}%`;
-                
-                // Toggle controls based on gradient type
-                if (state.gradientType === 'linear') {
-                    linearControls.classList.remove('hidden');
-                    radialControls.classList.add('hidden');
-                } else {
-                    linearControls.classList.add('hidden');
-                    radialControls.classList.remove('hidden');
-                }
-                
-                // Update previews
-                updateGradientPreview();
-                updatePatternPreview();
-                
-                drawCard();
-            };
-
-            // Add new color picker
-            addColorBtn.addEventListener('click', () => {
-                const newColorIndex = colorPickersContainer.children.length;
-                if (newColorIndex < 5) {
-                    const newColorDiv = document.createElement('div');
-                    newColorDiv.innerHTML = `
-                        <label for="color-${newColorIndex}" class="block text-sm font-medium text-gray-400">Color ${newColorIndex + 1}</label>
-                        <input type="color" id="color-${newColorIndex}" value="#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}" class="color-input mt-1 w-full h-10 rounded-md border-gray-600 focus:ring-2 focus:ring-[#ff9800]">
-                    `;
-                    colorPickersContainer.appendChild(newColorDiv);
-                    
-                    document.getElementById(`color-${newColorIndex}`).addEventListener('input', handleUpdate);
-                    handleUpdate();
-                }
-            });
-
-            // Add new pattern color picker
-            addPatternColorBtn.addEventListener('click', () => {
-                const newColorIndex = patternColorPickersContainer.children.length;
-                if (newColorIndex < 5) {
-                    const newColorDiv = document.createElement('div');
-                    newColorDiv.innerHTML = `
-                        <label for="pattern-color-${newColorIndex}" class="block text-sm font-medium text-gray-400">Pattern Color ${newColorIndex + 1}</label>
-                        <input type="color" id="pattern-color-${newColorIndex}" value="#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}" class="pattern-color-input mt-1 w-full h-10 rounded-md border-gray-600 focus:ring-2 focus:ring-[#ff9800]">
-                    `;
-                    patternColorPickersContainer.appendChild(newColorDiv);
-                    
-                    document.getElementById(`pattern-color-${newColorIndex}`).addEventListener('input', handleUpdate);
-                    handleUpdate();
-                }
-            });
-
-            // Add event listeners for all inputs
-            document.querySelectorAll('.color-input, .pattern-color-input').forEach(input => {
-                input.addEventListener('input', handleUpdate);
-            });
-
-            patternInputs.forEach(input => {
-                input.addEventListener('change', handleUpdate);
-            });
-
-            patternStyleInputs.forEach(input => {
-                input.addEventListener('change', handleUpdate);
-            });
-
-            [patternSizeInput, patternThicknessInput, patternSpacingInput, rotationInput, zoomInput, 
-             gradientTypeSelect, gradientAngleInput, radialCenterXInput, 
-             radialCenterYInput, radialRadiusInput, backgroundOpacityInput,
-             patternOpacityInput, blurRadiusInput].forEach(input => {
-                input.addEventListener('input', handleUpdate);
-            });
-
-            // --- Mouse Interactions for Pan/Drag ---
-            canvas.addEventListener('mousedown', (e) => {
-                state.isDragging = true;
-                canvas.style.cursor = 'grabbing';
-                state.lastX = e.clientX;
-                state.lastY = e.clientY;
-            });
-
-            canvas.addEventListener('mousemove', (e) => {
-                if (!state.isDragging) return;
-                
-                const dx = e.clientX - state.lastX;
-                const dy = e.clientY - state.lastY;
-
-                state.offsetX += dx / state.zoom;
-                state.offsetY += dy / state.zoom;
-
-                state.lastX = e.clientX;
-                state.lastY = e.clientY;
-
-                drawCard();
-            });
-
-            canvas.addEventListener('mouseup', () => {
-                state.isDragging = false;
-                canvas.style.cursor = 'grab';
-            });
-            
-            canvas.addEventListener('mouseleave', () => {
-                state.isDragging = false;
-                canvas.style.cursor = 'grab';
-            });
-            
-            // Touch events for mobile
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                state.isDragging = true;
-                const touch = e.touches[0];
-                state.lastX = touch.clientX;
-                state.lastY = touch.clientY;
-            });
-            
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (!state.isDragging) return;
-                
-                const touch = e.touches[0];
-                const dx = touch.clientX - state.lastX;
-                const dy = touch.clientY - state.lastY;
-
-                state.offsetX += dx / state.zoom;
-                state.offsetY += dy / state.zoom;
-
-                state.lastX = touch.clientX;
-                state.lastY = touch.clientY;
-
-                drawCard();
-            });
-            
-            canvas.addEventListener('touchend', () => {
-                state.isDragging = false;
-            });
-
-            // --- Randomize Functionality ---
-            const randomizeAll = () => {
-                const availablePatterns = ['grid', 'dots', 'lines', 'hexagon', 'triangle', 'waves', 'noise', 'checkerboard', 'stripes', 'squares', 'rings', 'fractal', 'smoke'];
-                const numberOfPatterns = Math.floor(Math.random() * 3) + 1; // 1 to 3 random patterns
-                const randomPatterns = new Set();
-                while (randomPatterns.size < numberOfPatterns) {
-                    const randomIndex = Math.floor(Math.random() * availablePatterns.length);
-                    randomPatterns.add(availablePatterns[randomIndex]);
-                }
-                state.patterns = Array.from(randomPatterns);
-                document.querySelectorAll('input[name="pattern"]').forEach(input => {
-                    input.checked = state.patterns.includes(input.value);
-                });
-                
-                // Randomize colors
-                const numBackgroundColors = Math.floor(Math.random() * 3) + 2; // 2 to 4 colors
-                state.colors = [];
-                for (let i = 0; i < numBackgroundColors; i++) {
-                    state.colors.push(`#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`);
-                }
-                const numPatternColors = Math.floor(Math.random() * 3) + 2; // 2 to 4 colors
-                state.patternColors = [];
-                for (let i = 0; i < numPatternColors; i++) {
-                    state.patternColors.push(`#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`);
-                }
-                
-                // Randomize parameters
-                state.patternSize = Math.floor(Math.random() * (50 - 5 + 1)) + 5;
-                state.patternThickness = Math.floor(Math.random() * (10 - 1 + 1)) + 1;
-                state.patternSpacing = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
-                state.rotation = Math.floor(Math.random() * 360);
-                state.zoom = (Math.random() * (2.0 - 0.5) + 0.5).toFixed(1);
-                state.backgroundOpacity = (Math.random() * (1.0 - 0.5) + 0.5).toFixed(2);
-                state.patternOpacity = (Math.random() * (0.5 - 0.1) + 0.1).toFixed(2);
-                state.blurRadius = Math.floor(Math.random() * 50);
-
-                state.gradientType = Math.random() > 0.5 ? 'linear' : 'radial';
-                state.gradientAngle = Math.floor(Math.random() * 360);
-                state.radialCenterX = Math.floor(Math.random() * 100);
-                state.radialCenterY = Math.floor(Math.random() * 100);
-                state.radialRadius = Math.floor(Math.random() * (150 - 10) + 10);
-                state.patternStyle = Math.random() > 0.5 ? 'solid' : 'gradient';
-
-                // Update UI to reflect new state
-                updateUIFromState();
-                
-                // Redraw
-                drawCard();
-            };
-
-            const updateUIFromState = () => {
-                // Remove existing color pickers
-                colorPickersContainer.innerHTML = '';
-                state.colors.forEach((color, index) => {
-                    const newColorDiv = document.createElement('div');
-                    newColorDiv.innerHTML = `
-                        <label for="color-${index}" class="block text-sm font-medium text-gray-400">Color ${index + 1}</label>
-                        <input type="color" id="color-${index}" value="${color}" class="color-input mt-1 w-full h-10 rounded-md border-gray-600 focus:ring-2 focus:ring-[#ff9800]">
-                    `;
-                    colorPickersContainer.appendChild(newColorDiv);
-                    document.getElementById(`color-${index}`).addEventListener('input', handleUpdate);
-                });
-
-                patternColorPickersContainer.innerHTML = '';
-                state.patternColors.forEach((color, index) => {
-                    const newColorDiv = document.createElement('div');
-                    newColorDiv.innerHTML = `
-                        <label for="pattern-color-${index}" class="block text-sm font-medium text-gray-400">Pattern Color ${index + 1}</label>
-                        <input type="color" id="pattern-color-${index}" value="${color}" class="pattern-color-input mt-1 w-full h-10 rounded-md border-gray-600 focus:ring-2 focus:ring-[#ff9800]">
-                    `;
-                    patternColorPickersContainer.appendChild(newColorDiv);
-                    document.getElementById(`pattern-color-${index}`).addEventListener('input', handleUpdate);
-                });
-                
-                initializeUI();
-            };
-
-            randomizeBtn.addEventListener('click', randomizeAll);
-
-            // --- Fixed Download Functionality ---
-            downloadBtn.addEventListener('click', async () => {
-                loadingBox.classList.remove('hidden');
-                
-                // Create a temporary canvas at 1080x1080 resolution
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = 1080;
-                tempCanvas.height = 1080;
-                const tempCtx = tempCanvas.getContext('2d');
-                
-                // Draw the background gradient
-                const { 
-                    colors, 
-                    patternColors,
-                    patterns, 
-                    patternSize, 
-                    patternThickness, 
-                    patternSpacing,
-                    rotation, 
-                    zoom, 
-                    offsetX, 
-                    offsetY,
-                    gradientType,
-                    gradientAngle,
-                    radialCenterX,
-                    radialCenterY,
-                    radialRadius,
-                    backgroundOpacity,
-                    patternOpacity,
-                    patternStyle,
-                    blurRadius
-                } = state;
-                
-                let gradient;
-                if (gradientType === 'linear') {
-                    const angleRad = gradientAngle * Math.PI / 180;
-                    const x1 = tempCanvas.width/2 + Math.cos(angleRad) * tempCanvas.width/2;
-                    const y1 = tempCanvas.height/2 + Math.sin(angleRad) * tempCanvas.height/2;
-                    const x2 = tempCanvas.width/2 - Math.cos(angleRad) * tempCanvas.width/2;
-                    const y2 = tempCanvas.height/2 - Math.sin(angleRad) * tempCanvas.height/2;
-                    
-                    gradient = tempCtx.createLinearGradient(x1, y1, x2, y2);
-                } else {
-                    // Radial gradient
-                    const cx = (radialCenterX / 100) * tempCanvas.width;
-                    const cy = (radialCenterY / 100) * tempCanvas.height;
-                    const r = (radialRadius / 100) * Math.min(tempCanvas.width, tempCanvas.height);
-                    
-                    gradient = tempCtx.createRadialGradient(
-                        cx, cy, 0,
-                        cx, cy, r
-                    );
-                }
-                
-                for (let i = 0; i < colors.length; i++) {
-                    gradient.addColorStop(i / (colors.length - 1 || 1), colors[i]);
-                }
-                
-                // Apply background opacity
-                tempCtx.globalAlpha = backgroundOpacity;
-                tempCtx.fillStyle = gradient;
-                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-                tempCtx.globalAlpha = 1.0;
-
-                // Apply transformations
-                tempCtx.save();
-                tempCtx.translate(tempCanvas.width / 2, tempCanvas.height / 2);
-                tempCtx.rotate(rotation * Math.PI / 180);
-                tempCtx.scale(zoom, zoom);
-                tempCtx.translate(-tempCanvas.width / 2 + offsetX, -tempCanvas.height / 2 + offsetY);
-                
-                // Draw each selected pattern
-                patterns.forEach(pattern => {
-                    let patternColor;
-                    if (patternStyle === 'solid') {
-                        patternColor = patternColors.length > 1 ? patternColors[1] : "#FFFFFF";
-                    } else {
-                        const patternGradient = tempCtx.createLinearGradient(0, 0, tempCanvas.width, tempCanvas.height);
-                        patternGradient.addColorStop(0, patternColors[0]);
-                        patternGradient.addColorStop(1, patternColors[patternColors.length - 1]);
-                        patternColor = patternGradient;
-                    }
-                    
-                    switch(pattern) {
-                        case 'grid':
-                            drawGridPattern(tempCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'dots':
-                            drawDotsPattern(tempCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'lines':
-                            drawLinesPattern(tempCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'hexagon':
-                            drawHexagonPattern(tempCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'triangle':
-                            drawTrianglePattern(tempCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'waves':
-                            drawWavesPattern(tempCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'noise':
-                            drawNoisePattern(tempCtx, patternColor);
-                            break;
-                        case 'checkerboard':
-                            drawCheckerboardPattern(tempCtx, patternSize, patternColor, patternSpacing);
-                            break;
-                        case 'stripes':
-                            drawStripesPattern(tempCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'squares':
-                            drawSquaresPattern(tempCtx, patternSize, patternColor, patternSpacing);
-                            break;
-                        case 'rings':
-                            drawRingsPattern(tempCtx, patternSize, patternThickness, patternColor, patternSpacing);
-                            break;
-                        case 'fractal':
-                            drawFractalPattern(tempCtx, patternSize, patternColor, patternSpacing);
-                            break;
-                        case 'smoke':
-                            drawSmokePattern(tempCtx, patternColors);
-                            break;
-                        case 'random':
-                            // The randomize button already sets the state, so this doesn't need a draw function
-                            break;
-                    }
-                });
-                
-                tempCtx.restore();
-                
-                // Apply blur effect if needed
-                if (blurRadius > 0) {
-                    blurCtx.clearRect(0, 0, blurCanvas.width, blurCanvas.height);
-                    blurCtx.filter = `blur(${blurRadius}px)`;
-                    blurCtx.drawImage(tempCanvas, 0, 0);
-                    
-                    tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
-                    tempCtx.drawImage(blurCanvas, 0, 0);
-                }
-                
-                // Create download link
-                setTimeout(() => {
-                    const link = document.createElement('a');
-                    link.href = tempCanvas.toDataURL('image/png');
-                    link.download = 'cinematic-card.png';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    loadingBox.classList.add('hidden');
-                }, 300);
-            });
-
-            // Initial draw of the card
-            handleUpdate();
-        });
-    </script>
+    <!-- Link to your JavaScript file -->
+    <script type="module" src="js/script.js"></script>
 </body>
+
 </html>

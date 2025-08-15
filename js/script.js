@@ -44,7 +44,7 @@ const ui = {
     patternThickness: document.getElementById('pattern-thickness'),
     patternSpacing: document.getElementById('pattern-spacing'),
     rotation: document.getElementById('rotation'),
-    zoom: document.getElementById('zoom'),
+    zoom: document.getElementById('canvasZoom'),
     patternOpacity: document.getElementById('pattern-opacity'),
     blurRadius: document.getElementById('blur-radius'),
     gradientType: document.getElementById('gradient-type'),
@@ -448,7 +448,7 @@ function updateUILabels() {
     document.getElementById('radial-radius-value').textContent = `${state.radialRadius}%`;
     document.getElementById('pattern-opacity-value').textContent = `${Math.round(state.patternOpacity * 100)}%`;
     document.getElementById('rotation-value').textContent = `${state.rotation}°`;
-    document.getElementById('zoom-value').textContent = `${Math.round(state.zoom * 100)}%`;
+    document.getElementById('canvas-zoom-value').textContent = `${Math.round(state.zoom * 100)}%`;
     document.getElementById('blur-radius-value').textContent = `${state.blurRadius}px`;
     document.getElementById('pattern-size-value').textContent = `${state.patternSize}`;
     document.getElementById('pattern-thickness-value').textContent = `${state.patternThickness}`;
